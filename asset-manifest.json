@@ -1,0 +1,13 @@
+{
+  "files": {
+    "main.css": "/S4necheg/React-pizza/static/css/main.dcdbcd39.css",
+    "main.js": "/S4necheg/React-pizza/static/js/main.06fd6b50.js",
+    "index.html": "/S4necheg/React-pizza/index.html",
+    "main.dcdbcd39.css.map": "/S4necheg/React-pizza/static/css/main.dcdbcd39.css.map",
+    "main.06fd6b50.js.map": "/S4necheg/React-pizza/static/js/main.06fd6b50.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.dcdbcd39.css",
+    "static/js/main.06fd6b50.js"
+  ]
+}
