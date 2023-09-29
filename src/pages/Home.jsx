@@ -1,10 +1,12 @@
 import React from 'react';
+import qs from 'qs';
 import axios from 'axios';
 import { useSelector, useDispatch } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 
-import { setCategoryId, setCurrentPageCount } from '../redux/slices/filterSlice';
+import { setCategoryId, setCurrentPageCount, setFilters } from '../redux/slices/filterSlice';
 import Categories from '../components/Categories';
-import Sort from '../components/Sort';
+import Sort, { list } from '../components/Sort';
 import PizzaBlock from '../components/PizzaBlock/PizzaBlock';
 import Skeleton from '../components/PizzaBlock/Skeleton';
 import Pagination from '../components/Pagination';
@@ -20,6 +22,9 @@ function Home() {
   const { categoryId, sort, currentPage } = useSelector((state) => state.filter);
   const sortType = sort.sortProperty;
   const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const isSearch = React.useRef(false);
+  const isMounted = React.useRef(false);
 
   const { searchValue } = React.useContext(SearchContext);
   const [items, setItems] = React.useState([]);
@@ -33,7 +38,7 @@ function Home() {
     dispatch(setCurrentPageCount(number));
   };
 
-  React.useEffect(() => {
+  const fetchPizzas = () => {
     setIsLoading(true);
 
     const category = categoryId > 0 ? `category=${categoryId}` : '';
@@ -49,8 +54,49 @@ function Home() {
         setItems(res.data);
         setIsLoading(false);
       });
+  };
 
+  //Если был первый рендер и изменили параметры, то только тогда вшивать в адресную строчку параметры
+  React.useEffect(() => {
+    if (isMounted.current) {
+      const querySrting = qs.stringify({
+        sortProperty: sortType,
+        categoryId,
+        currentPage,
+      });
+
+      navigate(`?${querySrting}`);
+    }
+    isMounted.current = true;
+  }, [categoryId, sortType, currentPage, navigate]);
+
+  //Если был первый рендер, то проверяем URL-параметры и сохраняем в redux
+  React.useEffect(() => {
+    if (window.location.search) {
+      const params = qs.parse(window.location.search.substring(1));
+
+      const sort = list.find((obj) => obj.sortProperty === params.sortProperty);
+
+      dispatch(
+        setFilters({
+          ...params,
+          sort,
+        }),
+      );
+      isSearch.current = true;
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  //Если был первый рендер, то запрашиваем пиццы
+  React.useEffect(() => {
     window.scrollTo(0, 0);
+
+    if (!isSearch.current) {
+      fetchPizzas();
+    }
+    isSearch.current = false;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [categoryId, sortType, searchValue, currentPage]);
 
   const skeletons = [...new Array(6)].map((_, index) => <Skeleton key={index} />);
