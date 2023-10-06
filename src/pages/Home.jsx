@@ -1,9 +1,9 @@
 import React from 'react';
 import qs from 'qs';
-import axios from 'axios';
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 
+import { fetchPizzas } from '../redux/slices/pizzaSlice';
 import { setCategoryId, setCurrentPageCount, setFilters } from '../redux/slices/filterSlice';
 import Categories from '../components/Categories';
 import Sort, { list } from '../components/Sort';
@@ -20,6 +20,7 @@ import { SearchContext } from '../App';
 
 function Home() {
   const { categoryId, sort, currentPage } = useSelector((state) => state.filter);
+  const { items, status } = useSelector((state) => state.pizza);
   const sortType = sort.sortProperty;
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -27,8 +28,6 @@ function Home() {
   const isMounted = React.useRef(false);
 
   const { searchValue } = React.useContext(SearchContext);
-  const [items, setItems] = React.useState([]);
-  const [isLoading, setIsLoading] = React.useState(true);
 
   const onChangeCategory = (id) => {
     dispatch(setCategoryId(id));
@@ -38,22 +37,23 @@ function Home() {
     dispatch(setCurrentPageCount(number));
   };
 
-  const fetchPizzas = () => {
-    setIsLoading(true);
-
+  const getPizzas = async () => {
     const category = categoryId > 0 ? `category=${categoryId}` : '';
     const sortBy = sortType.replace('-', '');
     const order = sortType.includes('-') ? 'asc' : 'desc';
     const search = searchValue ? `&search=${searchValue}` : '';
 
-    axios
-      .get(
-        `https://650db563a8b42265ec2c9d6c.mockapi.io/items?page=${currentPage}&limit=4&${category}&${search}&sortBy=${sortBy}&order=${order}`,
-      )
-      .then((res) => {
-        setItems(res.data);
-        setIsLoading(false);
-      });
+    dispatch(
+      fetchPizzas({
+        category,
+        sortBy,
+        order,
+        search,
+        currentPage,
+      }),
+    );
+
+    window.scrollTo(0, 0);
   };
 
   //Если был первый рендер и изменили параметры, то только тогда вшивать в адресную строчку параметры
@@ -93,7 +93,7 @@ function Home() {
     window.scrollTo(0, 0);
 
     if (!isSearch.current) {
-      fetchPizzas();
+      getPizzas();
     }
     isSearch.current = false;
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -116,12 +116,21 @@ function Home() {
         <Sort />
       </div>
       <h2 className="content__title">Все пиццы</h2>
-      <div className="content__items">
-        {/* {items.map((obj) =>
+      {status === 'error' ? (
+        <div className="content__error-info">
+          <h2>
+            Произошла ошибка <span>😕</span>
+          </h2>
+          <p>К сожалению, не удалось получить пиццы. Попробуйте повторить попытку позже.</p>
+        </div>
+      ) : (
+        <div className="content__items">
+          {/* {items.map((obj) =>
       isLoading ? <Skeleton> </Skeleton> : <PizzaBlock key={obj.id} {...obj} />,
     )} */}
-        {isLoading ? skeletons : pizzas}
-      </div>
+          {status === 'loading' ? skeletons : pizzas}
+        </div>
+      )}
       <Pagination currentPage={currentPage} onChangePage={onChangePage} />
     </div>
   );
