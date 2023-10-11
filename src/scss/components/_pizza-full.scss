@@ -1,0 +1,43 @@
+@import '../variables';
+
+.pizza-info {
+  text-align: center;
+  margin-bottom: 65px;
+  width: $container-width;
+  margin: 0 auto;
+
+  &__image {
+    width: 400px;
+
+    @media (max-width: 460px) {
+      width: 340px;
+    }
+
+    @media (max-width: 400px) {
+      width: 300px;
+    }
+  }
+
+  &__info {
+    font-size: 18px;
+    font-weight: 600;
+    letter-spacing: 1%;
+    margin-bottom: 20px;
+    word-break: Normal;
+  }
+
+  &__title {
+    font-size: 20px;
+    font-weight: 900;
+    letter-spacing: 1%;
+    margin-bottom: 20px;
+  }
+
+  &__price {
+    font-weight: bold;
+    font-size: 22px;
+    line-height: 27px;
+    letter-spacing: 0.015em;
+    margin-bottom: 40px;
+  }
+}
