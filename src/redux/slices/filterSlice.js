@@ -16,12 +16,15 @@ const filterSlice = createSlice({
   reducers: {
     setCategoryId(state, action) {
       state.categoryId = action.payload;
+      state.currentPage = 1;
     },
     setSearchValue(state, action) {
       state.searchValue = action.payload;
+      state.currentPage = 1;
     },
     setSort(state, action) {
       state.sort = action.payload;
+      state.currentPage = 1;
     },
     setCurrentPageCount(state, action) {
       state.currentPage = action.payload;

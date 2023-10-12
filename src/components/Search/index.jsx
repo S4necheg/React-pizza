@@ -22,7 +22,7 @@ function Search() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const updateSearchValue = React.useCallback(
     debounce((str) => {
-      dispatch(setSearchValue(str));
+      dispatch(setSearchValue(str.replace(/^\s+|\s+$|\s+(?=\s)/g, '')));
     }, 400),
     [],
   );
