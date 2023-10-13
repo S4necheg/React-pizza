@@ -23,13 +23,36 @@ function PizzaBlock({ id, title, price, imageUrl, sizes, types }) {
     const item = {
       id,
       title,
-      price,
+      price: pricePizza,
       imageUrl,
       type: typeNames[activeType],
       size: sizes[activeSize],
     };
     dispatch(addItem(item));
   };
+
+  //изменение цены с выбором типа и размера
+  let pricePizza = price;
+
+  if (activeType === 0 && activeSize === 0) {
+    pricePizza = Math.round(price * 1);
+    console.log(pricePizza);
+  } else if (activeType === 0 && activeSize === 1) {
+    pricePizza = Math.round(price * 1.53);
+    console.log(pricePizza);
+  } else if (activeType === 0 && activeSize === 2) {
+    pricePizza = Math.round(price * 1.81);
+    console.log(pricePizza);
+  } else if (activeType === 1 && activeSize === 0) {
+    pricePizza = Math.round(price + 40);
+    console.log(pricePizza);
+  } else if (activeType === 1 && activeSize === 1) {
+    pricePizza = Math.round(price * 1.53 + 40);
+    console.log(pricePizza);
+  } else if (activeType === 1 && activeSize === 2) {
+    pricePizza = Math.round(price * 1.81 + 40);
+    console.log(pricePizza);
+  }
 
   return (
     <div className="pizza-block-wrapper">
@@ -61,7 +84,7 @@ function PizzaBlock({ id, title, price, imageUrl, sizes, types }) {
           </ul>
         </div>
         <div className="pizza-block__bottom">
-          <div className="pizza-block__price">от {price} ₽</div>
+          <div className="pizza-block__price">от {pricePizza} ₽</div>
           <button onClick={onClickAdd} className="button button--outline button--add">
             <svg
               width="12"
