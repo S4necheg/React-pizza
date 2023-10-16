@@ -4,9 +4,14 @@ import { useParams, Link } from 'react-router-dom';
 
 import Skeleton from '../components/PizzaBlock/Skeleton';
 
-function FullPizza() {
-  const [pizza, setPizza] = React.useState();
-  const { id } = useParams([]);
+function FullPizza(): React.ReactElement {
+  const [pizza, setPizza] = React.useState<{
+    imageUrl: string;
+    title: string;
+    price: number;
+    info: string;
+  }>();
+  const { id } = useParams();
 
   React.useEffect(() => {
     async function fetchPizza() {

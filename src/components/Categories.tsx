@@ -1,6 +1,11 @@
 import React from 'react';
 
-function Categories({ value, onChangeCategory }) {
+type CategoriesProps = {
+  value: number;
+  onChangeCategory: (i: number) => void;
+};
+
+function Categories({ value, onChangeCategory }: CategoriesProps): React.ReactElement {
   const categories = ['Все', 'Мясные', 'Вегетарианская', 'Гриль', 'Острые', 'Закрытые'];
 
   return (

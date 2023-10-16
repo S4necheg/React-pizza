@@ -6,28 +6,28 @@ import { setSearchValue } from '../../redux/slices/filterSlice';
 import styles from './Search.module.scss';
 import { useDispatch } from 'react-redux';
 
-function Search() {
+function Search(): React.ReactElement {
   const dispatch = useDispatch();
 
   const [value, setValue] = React.useState('');
 
-  const inputRef = React.useRef();
+  const inputRef = React.useRef<HTMLInputElement>(null);
 
   const onClickClear = () => {
     dispatch(setSearchValue(''));
     setValue('');
-    inputRef.current.focus();
+    inputRef.current?.focus(); //? оператор опциональной последовательности
   };
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const updateSearchValue = React.useCallback(
-    debounce((str) => {
+    debounce((str: string) => {
       dispatch(setSearchValue(str.replace(/^\s+|\s+$|\s+(?=\s)/g, '')));
     }, 400),
     [],
   );
 
-  const onChangeInput = (event) => {
+  const onChangeInput = (event: React.ChangeEvent<HTMLInputElement>) => {
     setValue(event.target.value);
     updateSearchValue(event.target.value);
   };

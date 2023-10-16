@@ -6,12 +6,31 @@ import { Link } from 'react-router-dom';
 
 const typeNames = ['тонкое', 'традиционное'];
 
-function PizzaBlock({ id, title, price, imageUrl, sizes, types }) {
+type PizzaBlockProps = {
+  id: string;
+  title: string;
+  price: number;
+  imageUrl: string;
+  sizes: number[];
+  types: number[];
+  rating: number;
+};
+
+function PizzaBlock({
+  id,
+  title,
+  price,
+  imageUrl,
+  sizes,
+  types,
+}: PizzaBlockProps): React.ReactElement {
   const dispatch = useDispatch();
   const [activeType, setActiveType] = React.useState(0);
   const [activeSize, setActiveSize] = React.useState(0);
   const cartItem = useSelector((state) =>
+    //@ts-ignore
     state.cart.items.find(
+      //@ts-ignore
       (obj) =>
         obj.id === id && obj.type === typeNames[activeType] && obj.size === sizes[activeSize],
     ),
@@ -36,22 +55,16 @@ function PizzaBlock({ id, title, price, imageUrl, sizes, types }) {
 
   if (activeType === 0 && activeSize === 0) {
     pricePizza = Math.round(price * 1);
-    console.log(pricePizza);
   } else if (activeType === 0 && activeSize === 1) {
     pricePizza = Math.round(price * 1.53);
-    console.log(pricePizza);
   } else if (activeType === 0 && activeSize === 2) {
     pricePizza = Math.round(price * 1.81);
-    console.log(pricePizza);
   } else if (activeType === 1 && activeSize === 0) {
     pricePizza = Math.round(price + 40);
-    console.log(pricePizza);
   } else if (activeType === 1 && activeSize === 1) {
     pricePizza = Math.round(price * 1.53 + 40);
-    console.log(pricePizza);
   } else if (activeType === 1 && activeSize === 2) {
     pricePizza = Math.round(price * 1.81 + 40);
-    console.log(pricePizza);
   }
 
   return (
