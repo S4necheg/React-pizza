@@ -1,15 +1,20 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { PayloadAction, createSlice } from '@reduxjs/toolkit';
+import { getCartFromLS } from '../../utils/getCartFromLS';
+import { CartItem, CartSliceState } from './types';
+import { calcTotalPrice } from '../../utils/calcTotalPrice';
 
-const initialState = {
-  totalPrice: 0,
-  items: [],
+const { items, totalPrice } = getCartFromLS();
+
+const initialState: CartSliceState = {
+  totalPrice,
+  items,
 };
 
 const cartSlice = createSlice({
   name: 'cart',
   initialState,
   reducers: {
-    addItem(state, action) {
+    addItem(state, action: PayloadAction<CartItem>) {
       const findItem = state.items.find(
         (obj) =>
           obj.id === action.payload.id &&
@@ -26,11 +31,9 @@ const cartSlice = createSlice({
         });
       }
 
-      state.totalPrice = state.items.reduce((sum, obj) => {
-        return obj.price * obj.count + sum;
-      }, 0);
+      state.totalPrice = calcTotalPrice(state.items);
     },
-    minusItem(state, action) {
+    minusItem(state, action: PayloadAction<CartItem>) {
       const findItem = state.items.find(
         (obj) =>
           obj.id === action.payload.id &&
@@ -41,10 +44,10 @@ const cartSlice = createSlice({
       if (findItem) {
         findItem.count--;
       }
-
+      //@ts-ignoreignore
       state.totalPrice -= findItem.price;
     },
-    removeItem(state, action) {
+    removeItem(state, action: PayloadAction<CartItem>) {
       const findItem = state.items.find(
         (obj) =>
           obj.id === action.payload.id &&
@@ -58,7 +61,7 @@ const cartSlice = createSlice({
           obj.size !== action.payload.size ||
           obj.type !== action.payload.type,
       );
-
+      //@ts-ignoreignore
       state.totalPrice -= findItem.price * findItem.count;
     },
     clearItem(state) {
@@ -67,8 +70,6 @@ const cartSlice = createSlice({
     },
   },
 });
-
-export const selectCart = (state) => state.cart;
 
 export const { addItem, minusItem, removeItem, clearItem } = cartSlice.actions;
 

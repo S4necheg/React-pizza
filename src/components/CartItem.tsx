@@ -1,6 +1,7 @@
 import React from 'react';
 import { useDispatch } from 'react-redux';
-import { addItem, removeItem, minusItem } from '../redux/slices/cartSlice';
+import { addItem, removeItem, minusItem } from '../redux/cart/slice';
+import { CartItem } from '../redux/cart/types';
 
 type CartItemProps = {
   id: string;
@@ -12,7 +13,7 @@ type CartItemProps = {
   imageUrl: string;
 };
 
-function CartItem({
+function CartItemBlock({
   id,
   title,
   type,
@@ -29,17 +30,19 @@ function CartItem({
         id,
         size,
         type,
-      }),
+      } as CartItem),
     );
   };
 
   const onClickMinus = () => {
-    count < 2 ? dispatch(removeItem({ id, type, size })) : dispatch(minusItem({ id, type, size }));
+    count < 2
+      ? dispatch(removeItem({ id, type, size } as CartItem))
+      : dispatch(minusItem({ id, type, size } as CartItem));
   };
 
   const onClickRemove = () => {
     if (window.confirm('Вы действительно хотите удалить?')) {
-      dispatch(removeItem({ id, type, size }));
+      dispatch(removeItem({ id, type, size } as CartItem));
     }
   };
 
@@ -121,4 +124,4 @@ function CartItem({
   );
 }
 
-export default CartItem;
+export default CartItemBlock;
