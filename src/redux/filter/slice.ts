@@ -1,7 +1,7 @@
 import { PayloadAction, createSlice } from '@reduxjs/toolkit';
 import { FilterSliceState, Sort, SortPropertyEnum } from './types';
 
-const initialState: FilterSliceState = {
+export const initialState: FilterSliceState = {
   searchValue: '',
   categoryId: 0,
   currentPage: 1,

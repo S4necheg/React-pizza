@@ -6,7 +6,12 @@ import { useAppDispatch } from '../redux/store';
 import { selectPizzaData } from '../redux/pizza/selectors';
 import { fetchPizzas } from '../redux/pizza/asyncActions';
 import { selectFilter } from '../redux/filter/selectors';
-import { setCategoryId, setCurrentPageCount, setFilters } from '../redux/filter/slice';
+import {
+  initialState,
+  setCategoryId,
+  setCurrentPageCount,
+  setFilters,
+} from '../redux/filter/slice';
 import Categories from '../components/Categories';
 import PizzaBlock from '../components/PizzaBlock/PizzaBlock';
 import Skeleton from '../components/PizzaBlock/Skeleton';
@@ -73,6 +78,7 @@ function Home(): React.ReactElement {
 
       navigate(`?${querySrting}`);
     }
+
     isMounted.current = true;
   }, [categoryId, sortType, currentPage, navigate]);
 
@@ -80,10 +86,29 @@ function Home(): React.ReactElement {
   React.useEffect(() => {
     if (window.location.search) {
       const params = qs.parse(window.location.search.substring(1)) as TParsedQuery;
+
+      //Если в адресной строке будет стоять url, который соответствует изначальному состоянию хранилища, то
+      //страница будет пустой, потому что мы достаем из url такие же данные как в initialState и в итоге запрос не уходит на бэк
+      //Поэтому нужна проверка
+      if (
+        initialState.categoryId === Number(params.categoryId) &&
+        initialState.sort.sortProperty === params.sortProperty &&
+        initialState.currentPage === Number(params.currentPage)
+      ) {
+        dispatch(
+          fetchPizzas({
+            category: params.categoryId,
+            sortBy: params.sortProperty,
+            order: 'desc',
+            search: params.searchValue,
+            currentPage: params.currentPage,
+          }),
+        );
+      }
+
       const sort = list.find((obj) => {
         return obj.sortProperty === params.sortProperty;
       });
-      // console.log(sort);
 
       dispatch(
         setFilters({
@@ -93,6 +118,7 @@ function Home(): React.ReactElement {
           sort: sort || list[0],
         }),
       );
+
       isSearch.current = true;
     }
   }, [dispatch]);
@@ -104,9 +130,10 @@ function Home(): React.ReactElement {
     if (!isSearch.current) {
       getPizzas();
     }
+
     isSearch.current = false;
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [categoryId, sortType, searchValue, currentPage]);
+  }, [categoryId, sort.sortProperty, searchValue, currentPage]);
 
   const skeletons = [...new Array(4)].map((_, index) => <Skeleton key={index} />);
   const pizzas = items
